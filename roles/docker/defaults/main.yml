@@ -5,5 +5,5 @@ docker_machine_url: "{{'https://github.com/docker/machine/releases/download/v' ~
 docker_keyserver: "hkp://p80.pool.sks-keyservers.net:80"
 docker_keyserver_id: "58118E89F3A912897C070ADBF76221572C52609D"
 docker_version: "1.9.1"
-docker_opts: "--bip='172.17.42.1/16' --storage-driver=overlay"
+docker_opts: "--bip='172.17.42.1/16'"
 docker_engine_version: "docker-engine={{docker_version}}-0~{{ubuntu_name}}"

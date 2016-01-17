@@ -1,0 +1,9 @@
+---
+
+- debug: Install the EMC CA certificates
+
+- file: path=/usr/local/share/ca-certificates/ state=directory
+- copy: src=EMC_Root_CA.pem dest=/usr/local/share/ca-certificates/EMC_Root_CA.crt
+- copy: src=EMC_SSL_Decryption_Authority.pem dest=/usr/local/share/ca-certificates/EMC_SSL_Decryption_Authority.crt
+- shell: update-ca-certificates
+
