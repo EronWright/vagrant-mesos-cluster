@@ -46,7 +46,7 @@ First create a file, `ubuntu.json`, with the details of the Docker container tha
 And second, submit this container to Marathon by using curl:
 
 ```
-curl -X POST -H "Content-Type: application/json" http://10.0.10.11:8080/v2/apps -d@ubuntu.json
+curl -X POST -H "Content-Type: application/json" http://100.0.10.11:8080/v2/apps -d@ubuntu.json
 ```
 
 You can monitor and scale the instance by going to the Marathon web interface linked above. 
