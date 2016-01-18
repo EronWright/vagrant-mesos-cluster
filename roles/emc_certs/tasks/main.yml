@@ -1,9 +1,18 @@
 ---
 
-- debug: Install the EMC CA certificates
+- name: Install the EMC CA certificates (1)
+  sudo: yes
+  file: path=/usr/local/share/ca-certificates/ state=directory
 
-- file: path=/usr/local/share/ca-certificates/ state=directory
-- copy: src=EMC_Root_CA.pem dest=/usr/local/share/ca-certificates/EMC_Root_CA.crt
-- copy: src=EMC_SSL_Decryption_Authority.pem dest=/usr/local/share/ca-certificates/EMC_SSL_Decryption_Authority.crt
-- shell: update-ca-certificates
+- name: Install the EMC CA certificates (2)
+  sudo: yes
+  copy: src=EMC_Root_CA.pem dest=/usr/local/share/ca-certificates/EMC_Root_CA.crt
+
+- name: Install the EMC CA certificates (3)
+  sudo: yes
+  copy: src=EMC_SSL_Decryption_Authority.pem dest=/usr/local/share/ca-certificates/EMC_SSL_Decryption_Authority.crt
+
+- name: Install the EMC CA certificates (4)
+  sudo: yes
+  shell: update-ca-certificates
 
