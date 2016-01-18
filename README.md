@@ -5,16 +5,37 @@ A vagrant configuration to set up a cluster of mesos master, slaves and zookeepe
 
 # Usage
 
+## Launching the cluster
 Clone the repository, and run:
 
 ```
-vagrant up
+$ vagrant up
 ```
 
 This will provision a mini Mesos cluster with one master, one slave, and one
 HAProxy instance.  The Mesos master server also contains Zookeeper and the
 Marathon framework. The slave will come with Docker installed. 
 
+## Installing the CLI
+The `dcos` CLI is capable of remotely managing the cluster from the Vagrant host.
+
+Prerequisites: 
+- The host must have the Python [virtualenv](https://virtualenv.readthedocs.org/en/latest/) tool installed.
+
+The following command installs the CLI into an isolated virtual environment:
+```
+$ bin/install-cli.sh
+```
+
+Whenever you wish to use the `dcos` CLI, activate the virtual environment:
+```
+$ source bin/env-setup
+...
+
+$ dcos node
+  HOSTNAME         IP                        ID
+100.0.10.101  100.0.10.101  20160117-085745-185204836-5050-1-S1
+```
 
 # Deploying Docker containers
 
