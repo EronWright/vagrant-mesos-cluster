@@ -30,7 +30,7 @@
     - zookeeper_servers: "{{ groups['mesos-masters'] }}"
     - mesos_quorum: "{{ ((groups['mesos-masters'] | length) / 2) | round(0, 'ceil') | int }}"
     - mesos_logging_level: "INFO"
-    - marathon_logging_level: "warn"
+    - marathon_logging_level: "info"
 
   roles:
     - common

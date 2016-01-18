@@ -3,7 +3,7 @@ VAGRANTFILE_API_VERSION = "2"
 base_dir = File.expand_path(File.dirname(__FILE__))
 cluster = {
   "mesos-master1" => { :ip => "100.0.10.11",  :cpus => 1, :mem => 1024 },
-  "mesos-slave1"  => { :ip => "100.0.10.101", :cpus => 1, :mem => 1024 }
+  "mesos-slave1"  => { :ip => "100.0.10.101", :cpus => 4, :mem => 8192 }
 }
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|

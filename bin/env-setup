@@ -1,0 +1,36 @@
+if [ -n "$BASH_SOURCE" ] ; then
+    BIN_DIR=$(dirname "$BASH_SOURCE")
+elif [ $(basename -- "$0") = "env-setup" ]; then
+    BIN_DIR=$(dirname "$0")
+else
+    BIN_DIR=$PWD/bin
+fi
+
+BASE_DIR="$BIN_DIR/.."
+FULL_BASE_PATH=$(python -c "import os; print(os.path.realpath('$BASE_DIR'))")
+
+# activate the virtualenv (see bin/install-cli.sh)
+source $FULL_BASE_PATH/env/bin/activate
+
+# configure the CLI
+export DCOS_CONFIG=$FULL_BASE_PATH/dcos.toml
+
+if [ ! -f "$DCOS_CONFIG" ]; then
+    touch "$DCOS_CONFIG"
+
+    dcos config set core.dcos_url http://100.0.10.11
+    dcos config set core.mesos_master_url http://100.0.10.11:5050
+    dcos config set marathon.url http://100.0.10.101:8080
+
+    dcos config set core.reporting false
+    dcos config set core.email "nobody@nowhere.com"
+    dcos config set package.cache $FULL_BASE_PATH/.dcos
+
+    dcos config append package.sources https://github.com/mesosphere/universe/archive/version-1.x.zip
+    dcos config prepend package.sources https://github.com/mesosphere/multiverse/archive/version-1.x.zip
+
+    dcos package update
+
+    # to use a local fork of the multiverse, uncomment the next line:
+    # dcos config prepend package.sources "file:///path/to/multiverse"
+fi

@@ -1,2 +1,5 @@
 .vagrant
 .dockercfg
+.dcos
+dcos.toml
+env/
