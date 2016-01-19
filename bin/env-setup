@@ -20,7 +20,7 @@ if [ ! -f "$DCOS_CONFIG" ]; then
 
     dcos config set core.dcos_url http://100.0.10.11
     dcos config set core.mesos_master_url http://100.0.10.11:5050
-    dcos config set marathon.url http://100.0.10.101:8080
+    dcos config set marathon.url http://100.0.10.11:8080
 
     dcos config set core.reporting false
     dcos config set core.email "nobody@nowhere.com"
