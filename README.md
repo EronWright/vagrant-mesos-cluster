@@ -5,6 +5,10 @@ A vagrant configuration to set up a cluster of mesos master, slaves and zookeepe
 
 # Usage
 
+## Prerequisites
+1. Install Ansible onto the Vagrant host.
+2. Install Python [virtualenv](https://virtualenv.readthedocs.org/en/latest/) onto the Vagrant host.
+
 ## Launching the cluster
 Clone the repository, and run:
 
@@ -18,9 +22,6 @@ Marathon framework. The slave will come with Docker installed.
 
 ## Installing the CLI
 The `dcos` CLI is capable of remotely managing the cluster from the Vagrant host.
-
-Prerequisites: 
-- The host must have the Python [virtualenv](https://virtualenv.readthedocs.org/en/latest/) tool installed.
 
 The following command installs the CLI into an isolated virtual environment:
 ```
