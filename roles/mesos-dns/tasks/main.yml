@@ -1,0 +1,5 @@
+---
+- include: mesos-master.yml
+  when: mesos_mode is defined and mesos_mode == "master"
+
+- include: mesos-all.yml

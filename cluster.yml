@@ -39,6 +39,7 @@
     - { role: zookeeper, tags: [ 'zookeeper' ] }
     - { role: mesosphere, tags: [ 'mesos' ], mesos_mode: master }
     - { role: marathon, tags: [ 'marathon'] }
+    - { role: mesos-dns, tags: [ 'mesos-dns'], mesos_mode: master }
 
 # Mesos slaves
 - hosts: mesos-slaves
@@ -47,8 +48,8 @@
 
   vars:
     - mesos_executor_registration_timeout: 5mins
-    - mesos_logging_level: "WARNING"
-    - marathon_logging_level: "warn"
+    - mesos_logging_level: "INFO"
+    - marathon_logging_level: "info"
 
   roles:
     - common
@@ -56,3 +57,4 @@
     - { role: docker, tags: [ 'docker' ], installation_type: traditional }
     - { role: mesosphere, tags: [ 'mesos' ], mesos_mode: agent }
     - { role: haproxy_bridge, tags: [ 'haproxy-bridge'] }
+    - { role: mesos-dns, tags: [ 'mesos-dns'], mesos_mode: agent }

@@ -1,0 +1,10 @@
+{
+  "masters": ["{{ groups['mesos-masters'] | first }}:5050"],  
+  "refreshSeconds": 60,
+  "ttl": 60,
+  "domain": "mesos",
+  "port": 53,
+  "resolvers": ["169.254.169.254","10.0.2.3"],  
+  "timeout": 5,
+  "email": "root.mesos-dns.mesos"
+}

@@ -1,0 +1,27 @@
+---
+- name: Prepare the mesos-dns configuration (1)
+  sudo: yes
+  file: path=/etc/mesos-dns/ state=directory
+  
+- name: Prepare the mesos-dns configuration (2)
+  template: src=config.json.j2 dest=/etc/mesos-dns/config.json
+  sudo: yes
+  
+- name: Make sure mesos-dns is running and config is up-to-date
+  sudo: yes
+  docker:
+    image: "{{mesosdns_docker_image}}"
+    name: "{{mesosdns_name}}"
+    command: "/mesos-dns -v=2 -config=/config.json"
+    ports:
+      - "8123:8123"
+      - "53:53"
+    expose:
+      - 8123
+      - 53
+    volumes:
+      - "/etc/mesos-dns/config.json:/config.json"
+    privileged: True
+    net: host
+    restart_policy: always
+    state: restarted

@@ -1,0 +1,5 @@
+---
+mesosdns_version: "latest"
+mesosdns_docker_image: "mesosphere/mesos-dns:{{mesosdns_version}}"
+mesosdns_name: "mesos_dns"
+mesosdns_task_launch_timeout: 600000
