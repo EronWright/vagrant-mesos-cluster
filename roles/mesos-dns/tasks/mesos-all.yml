@@ -1,5 +1,12 @@
 ---
-- name: Update the resolv.conf
-  template: src=resolv.conf.j2 dest=/etc/resolv.conf
+- name: Configuring dhclient for mesos-dns (1)
   sudo: yes
-  
+  lineinfile: dest=/etc/dhcp/dhclient.conf regexp='^prepend domain-name-servers ' line='prepend domain-name-servers {{ marathon_host_servers | first }};'
+  notify:
+    - restart dhclient
+    
+- name: Configuring dhclient for mesos-dns (2)
+  sudo: yes
+  lineinfile: dest=/etc/dhcp/dhclient.conf regexp='^prepend domain-search ' line='prepend domain-search "{{ mesosdns_dns_domain }}";'
+  notify:
+    - restart dhclient

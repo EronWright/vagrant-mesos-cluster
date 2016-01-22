@@ -1,0 +1,4 @@
+
+- name: restart dhclient
+  sudo: yes
+  shell: dhclient -v

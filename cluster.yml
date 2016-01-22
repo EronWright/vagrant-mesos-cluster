@@ -17,6 +17,10 @@
         marathon_host_servers: "{{ groups['mesos-masters'] }}"
         marathon_zk: "zk://{{ zk_endpoint }}/marathon"
 
+    - name: Set global mesos-dns variable facts
+      set_fact:
+        mesosdns_dns_resolver: "{{ dns_resolver | default('8.8.8.8') }}"
+        
 #    - name: Set Kernel package version
 #      set_fact:
 #        kernel_package: "linux-image-3.19.0-33-generic"
