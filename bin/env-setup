@@ -24,7 +24,7 @@ if [ ! -f "$DCOS_CONFIG" ]; then
 
     dcos config set core.reporting false
     dcos config set core.email "nobody@nowhere.com"
-    dcos config set package.cache $FULL_BASE_PATH/.dcos
+    dcos config set package.cache $FULL_BASE_PATH/.dcos/cache
 
     dcos config append package.sources https://github.com/mesosphere/universe/archive/version-1.x.zip
     dcos config prepend package.sources https://github.com/mesosphere/multiverse/archive/version-1.x.zip
