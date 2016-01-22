@@ -6,8 +6,11 @@ A vagrant configuration to set up a cluster of mesos master, slaves and zookeepe
 # Usage
 
 ## Prerequisites
-1. Install Ansible onto the Vagrant host.
-2. Install Python [virtualenv](https://virtualenv.readthedocs.org/en/latest/) onto the Vagrant host.
+Install the following software onto your Mac OS X or Linux box.   Note: Windows is not supported at this
+1. Install [virtualbox 5.x](https://www.virtualbox.org/).
+2. Install [Vagrant 1.8.x](https://www.vagrantup.com/downloads.html).
+3. Install [Ansible](http://docs.ansible.com/ansible/intro_installation.html).
+4. Install Python [virtualenv](https://virtualenv.readthedocs.org/en/latest/).
 
 ## Launching the cluster
 Clone the repository, and run:
