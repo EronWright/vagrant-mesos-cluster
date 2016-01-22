@@ -34,7 +34,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         ansible.inventory_path = base_dir + "/inventory/vagrant"
         ansible.playbook = base_dir + "/cluster.yml"
         ansible.extra_vars = {
-          vagrant_ip: "#{info[:ip]}"
+          vagrant_ip: "#{info[:ip]}",
+          dns_resolver: "100.0.2.3"
         }
         ansible.limit = "#{info[:ip]}" # Ansible hosts are identified by ip
       end

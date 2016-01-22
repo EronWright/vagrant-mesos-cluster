@@ -1,0 +1,7 @@
+---
+mesosdns_version: "1.2.0"
+mesosdns_docker_image: "mrbobbytables/mesos-dns:{{mesosdns_version}}"
+mesosdns_name: "mesos_dns"
+mesosdns_task_launch_timeout: 600000
+mesosdns_dns_resolver: "8.8.8.8"
+mesosdns_dns_domain: mesos
