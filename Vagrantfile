@@ -1,9 +1,10 @@
 VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 1.8.1"
 
 base_dir = File.expand_path(File.dirname(__FILE__))
 cluster = {
   "mesos-master1" => { :ip => "100.0.10.11",  :cpus => 1, :mem => 1024 },
-  "mesos-slave1"  => { :ip => "100.0.10.101", :cpus => 4, :mem => 8192 }
+  "mesos-slave1"  => { :ip => "100.0.10.101", :cpus => 4, :mem => 4096 }
 }
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -23,6 +24,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         override.vm.network :private_network, ip: "#{info[:ip]}"
         override.vm.hostname = hostname
 
+        vb.linked_clone = true
         vb.name = 'vagrant-mesos-' + hostname
         vb.customize ["modifyvm", :id, "--memory", info[:mem], "--cpus", info[:cpus], "--hwvirtex", "on" ]
       end
