@@ -21,8 +21,19 @@ $ vagrant up
 ```
 
 This will provision a mini Mesos cluster with one master, one slave, and one
-HAProxy instance.  The Mesos master server also contains Zookeeper and the
-Marathon framework. The slave will come with Docker installed. 
+HAProxy instance.  The Mesos master server also contains Zookeeper, the
+Marathon framework, and Mesos DNS.   The slave will come with Docker installed,
+and with the Mesos Docker containerizer ready for use.
+
+- Browse to the Mesos UI:     http://100.0.10.11:5050/
+- Browse to the Marathon UI:  http://100.0.10.11:8080/
+
+## Using SSH
+Access the virtual machines using the `vagrant ssh` command:
+```
+$ vagrant ssh mesos-master1
+...
+```
 
 ## Installing the CLI
 The `dcos` CLI is capable of remotely managing the cluster from the Vagrant host.
@@ -42,10 +53,8 @@ $ dcos node
 100.0.10.101  100.0.10.101  20160117-085745-185204836-5050-1-S1
 ```
 
-# Deploying Docker containers
-
-After provisioning the servers you can access Marathon here:
-http://100.0.10.11:8080/ and the master itself here: http://100.0.10.11:5050/
+# Working with Applications
+## Deploying Docker containers
 
 Submitting a Docker container to run on the cluster is done by making a call to
 Marathon's REST API:
@@ -72,7 +81,14 @@ First create a file, `ubuntu.json`, with the details of the Docker container tha
 And second, submit this container to Marathon by using curl:
 
 ```
-curl -X POST -H "Content-Type: application/json" http://100.0.10.11:8080/v2/apps -d@ubuntu.json
+$ curl -X POST -H "Content-Type: application/json" http://100.0.10.11:8080/v2/apps -d@ubuntu.json
 ```
 
 You can monitor and scale the instance by going to the Marathon web interface linked above. 
+
+# Remarks
+
+## Mesos DNS
+Mesos DNS is a *service discovery* mechanism, not a fully-fledged DNS solution.   Applications use Mesos DNS to easily locate the Mesos master and their own frameworks and tasks.
+
+The hosts are expected to have a fully-functional DNS configuration, not provided by Mesos DNS.  In other words, don't expect to resolve the hostnames using Mesos DNS.     Going forward, we should leverage `vagrant-dnsmasq` or something similar, in addition to Mesos DNS.
