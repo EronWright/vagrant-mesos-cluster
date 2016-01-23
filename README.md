@@ -89,6 +89,6 @@ You can monitor and scale the instance by going to the Marathon web interface li
 # Remarks
 
 ## Mesos DNS
-Mesos DNS is a *service discovery* mechanism, not a fully-fledged DNS solution.   Applications use Mesos DNS to easily locate the Mesos master and their own frameworks and tasks.
+Mesos DNS provides *service discovery*, not a fully-fledged DNS solution.   Applications use Mesos DNS to easily locate the Mesos master and their own frameworks and tasks.
 
 The hosts are expected to have a fully-functional DNS configuration, not provided by Mesos DNS.  In other words, don't expect to resolve the hostnames using Mesos DNS.     Going forward, we should leverage `vagrant-dnsmasq` or something similar, in addition to Mesos DNS.
