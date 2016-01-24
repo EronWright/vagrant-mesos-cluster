@@ -10,8 +10,9 @@ Install the following software onto your Mac OS X or Linux box.   Note: Windows 
 
 1. Install [virtualbox 5.x](https://www.virtualbox.org/).
 2. Install [Vagrant 1.8.x](https://www.vagrantup.com/downloads.html).
-3. Install [Ansible](http://docs.ansible.com/ansible/intro_installation.html).
-4. Install Python [virtualenv](https://virtualenv.readthedocs.org/en/latest/).
+3. Install [vagrant-hosts](https://github.com/oscar-stack/vagrant-hosts#installation) plugin. 
+4. Install [Ansible](http://docs.ansible.com/ansible/intro_installation.html).
+5. Install Python [virtualenv](https://virtualenv.readthedocs.org/en/latest/).
 
 ## Launching the cluster
 Clone the repository, and run:
@@ -91,4 +92,12 @@ You can monitor and scale the instance by going to the Marathon web interface li
 ## Mesos DNS
 Mesos DNS provides *service discovery*, not a fully-fledged DNS solution.   Applications use Mesos DNS to easily locate the Mesos master and their own frameworks and tasks.
 
-The hosts are expected to have a fully-functional DNS configuration, not provided by Mesos DNS.  In other words, don't expect to resolve the hostnames using Mesos DNS.     Going forward, we should leverage `vagrant-dnsmasq` or something similar, in addition to Mesos DNS.
+The hosts are expected to have a fully-functional DNS configuration, not provided by Mesos DNS.  In other words, don't expect to resolve the hostnames using Mesos DNS.   Hostnames are automatically configured by Vagrant, and resolvable across the cluster thanks to the `vagrant-hosts` plugin.    
+
+In the below example, the `marathon` service is discovered via Mesos DNS and resolved to the associated host:
+```
+$ vagrant@mesos-slave1:~$ ping marathon
+PING marathon.mesos (100.0.10.11) 56(84) bytes of data.
+64 bytes from mesos-master1 (100.0.10.11): icmp_seq=1 ttl=64 time=0.352 ms
+64 bytes from mesos-master1 (100.0.10.11): icmp_seq=2 ttl=64 time=0.342 ms
+```
