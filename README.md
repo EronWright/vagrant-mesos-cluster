@@ -14,8 +14,11 @@ Install the following software onto your Mac OS X or Linux box.   Note: Windows 
 4. Install [Ansible](http://docs.ansible.com/ansible/intro_installation.html).
 5. Install Python [virtualenv](https://virtualenv.readthedocs.org/en/latest/).
 
+## Clone the repository
+The repository contains a submodule, so clone it using the `--recursive` flag.
+
 ## Launching the cluster
-Clone the repository, and run:
+Launch the cluster VMs:
 
 ```
 $ vagrant up
@@ -55,6 +58,33 @@ $ dcos node
 ```
 
 # Working with Applications
+
+## Deploying Spark
+Installing Spark on a Mesos cluster allows Spark applications to be launched into the cluster with `spark-submit` in [cluster mode](http://spark.apache.org/docs/latest/running-on-mesos.html#cluster-mode).   In technical terms, the Mesos Cluster Dispatcher is installed as a Marathon app.
+
+Use the DCOS cli to install the Spark package.
+
+```
+(dcoscli) $ dcos package install spark
+Note that the Apache Spark DCOS Service is beta and there may be bugs, incomplete features, incorrect documentation or other discrepancies.
+We recommend a minimum of two nodes with at least 2 CPU and 2GB of RAM available for the Spark Service and running a Spark job.
+Note: The Spark CLI may take up to 5min to download depending on your connection.
+Continue installing? [yes/no] yes
+Installing Marathon app for package [spark] version [1.6.0]
+Installing CLI subcommand for package [spark] version [1.6.0]
+New command available: dcos spark
+The Apache Spark DCOS Service has been successfully installed!
+
+	Documentation: https://spark.apache.org/docs/latest/running-on-mesos.html
+	Issues: https://issues.apache.org/jira/browse/SPARK
+```
+
+Now, open the webui, whose address may be obtained using the cli:
+```
+(dcoscli) $ dcos spark webui
+http://100.0.10.11/service/spark/
+```
+
 ## Deploying Docker containers
 
 Submitting a Docker container to run on the cluster is done by making a call to
@@ -101,3 +131,15 @@ PING marathon.mesos (100.0.10.11) 56(84) bytes of data.
 64 bytes from mesos-master1 (100.0.10.11): icmp_seq=1 ttl=64 time=0.352 ms
 64 bytes from mesos-master1 (100.0.10.11): icmp_seq=2 ttl=64 time=0.342 ms
 ```
+
+## Apache Spark
+The DCOS Universe provides a Spark package which installs the Mesos Cluster Dispatcher and an associated CLI.  
+
+The CLI provides the following functionality:
+
+- Automatically downloads the Spark tools (i.e. `spark-submit`).
+- Wraps `spark-submit` to automatically set the deploy mode to Mesos cluster mode, with the appropriate endpoint.
+- Manages running applications.
+- Easily launches the dispatcher webui.
+
+Notably absent from the installed components is the [Mesos Shuffle Service](http://spark.apache.org/docs/latest/running-on-mesos.html#dynamic-resource-allocation-with-mesos).  The shuffle service is a prerequisite for dynamic resource allocation in coarse-grained mode.
