@@ -158,11 +158,25 @@ Various packages in the Universe assume the use of Mesos DNS.   For example, the
 ## Apache Spark
 The DCOS Universe provides a Spark package which installs the Mesos Cluster Dispatcher and an associated CLI.  
 
+### Dispatcher
+The dispatcher is a Mesos framework responsible for launching and supervising Spark driver programs.   Programs are submitted to the dispatcher via its REST endpoint from `spark-submit`.
+
+The dispatcher is itself a Marathon application, see the definition at [github.com/mesosphere/universe/...](https://github.com/mesosphere/universe/blob/version-1.x/repo/packages/S/spark/5/marathon.json).
+
+### CLI
 The CLI (source code [here](https://github.com/mesosphere/dcos-spark)) provides the following functionality:
 
 - Automatically downloads the Spark tools (i.e. `spark-submit`).
 - Wraps `spark-submit` to automatically set the deploy mode to Mesos cluster mode, with the appropriate endpoint.
+- Enforces the use of a docker image to run the application.
 - Manages running applications.
 - Easily launches the dispatcher webui.
 
+### Docker Image
+Both the dispatcher and the application run within a (separate) Docker container.  By default, the `mesosphere/spark:1.6.0` image is used, but the CLI allows the app to override it with another image. 
+
+The source code for the `mesosphere/spark` image at [github.com/mesosphere/spark/...](https://github.com/mesosphere/spark/tree/mesosphere/dockerfile/mesos_docker/).
+
+### Shuffle Service
 Notably absent from the installed components is the [Mesos Shuffle Service](http://spark.apache.org/docs/latest/running-on-mesos.html#dynamic-resource-allocation-with-mesos).  The shuffle service is a prerequisite for dynamic resource allocation in coarse-grained mode.
+
