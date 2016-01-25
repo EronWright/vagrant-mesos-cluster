@@ -1,0 +1,4 @@
+[submodule "router/nginx/conf"]
+	path = router/nginx/conf
+	url = https://github.com/EronWright/adminrouter-public.git
+	branch = master

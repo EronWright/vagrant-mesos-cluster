@@ -1,0 +1,4 @@
+---
+router_version: "latest"
+router_docker_image: "eronwright/mesos-adminrouter:{{router_version}}"
+router_name: "admin_router"

@@ -44,6 +44,7 @@
     - { role: mesosphere, tags: [ 'mesos' ], mesos_mode: master }
     - { role: marathon, tags: [ 'marathon'] }
     - { role: mesos-dns, tags: [ 'mesos-dns'], mesos_mode: master }
+    - { role: admin_router, tags: [ 'admin_router'] }
 
 # Mesos slaves
 - hosts: mesos-slaves

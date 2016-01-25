@@ -1,0 +1,18 @@
+---
+- name: Make sure admin-router is running and config is up-to-date
+  sudo: yes
+  docker:
+    image: "{{router_docker_image}}"
+    name: "{{router_name}}"
+    ports:
+      - "80:80"
+      - "443:443"
+    expose:
+      - 80
+      - 443
+    volumes:
+      - "/dev/log:/dev/log"
+    privileged: False
+    net: host
+    restart_policy: always
+    state: restarted
