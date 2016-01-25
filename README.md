@@ -138,7 +138,7 @@ It is possible to fork the multiverse to add new packages.   You must reconfigur
 ## Admin Router
 The Admin Router acts as an HTTP gateway for the services and webui's in DCOS.   
 
-It contains large amounts of service-specific knowledge.  For example, it recognizes the `/services/sparkcli` path as a reference to the spark dispatcher's REST port.   The associated Marathon app also assumes the use of the admin router (see the `APPLICATION_WEB_PROXY_BASE` environment variable).
+It contains large amounts of service-specific knowledge.  For example, it recognizes the `/services/sparkcli` path as a reference to the spark dispatcher's REST port.   The Spark Marathon app also assumes the use of the admin router (see the `APPLICATION_WEB_PROXY_BASE` environment variable).
 
 ## Mesos DNS
 Mesos DNS provides *service discovery*, not a fully-fledged DNS solution.   Applications use Mesos DNS to easily locate the Mesos master and their own frameworks and tasks.
