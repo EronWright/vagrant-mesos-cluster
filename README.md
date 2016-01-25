@@ -1,7 +1,7 @@
 vagrant-mesos-cluster
 =====================
 
-A vagrant configuration to set up a cluster of mesos master, slaves and zookeepers through ansible
+A vagrant configuration to set up a cluster of mesos master, slaves and zookeepers through ansible.
 
 # Usage
 
@@ -26,7 +26,7 @@ $ vagrant up
 
 This will provision a mini Mesos cluster with one master, one slave, and one
 HAProxy instance.  The Mesos master server also contains Zookeeper, the
-Marathon framework, and Mesos DNS.   The slave will come with Docker installed,
+Marathon framework, Mesos DNS, and the Admin Router.   The slave will come with Docker installed,
 and with the Mesos Docker containerizer ready for use.
 
 - Browse to the Mesos UI:     http://100.0.10.11:5050/
@@ -55,6 +55,12 @@ $ source bin/env-setup
 $ dcos node
   HOSTNAME         IP                        ID
 100.0.10.101  100.0.10.101  20160117-085745-185204836-5050-1-S1
+```
+
+## Adding Slaves
+The vagrant script is pre-configured with addditional slaves (mesos-slave2 thru mesos-slave5).   They are configured to not auto-start and must be started manually:
+```
+$ vagrant up mesos-slave2
 ```
 
 # Working with Applications
@@ -119,6 +125,21 @@ You can monitor and scale the instance by going to the Marathon web interface li
 
 # Remarks
 
+## Package Repositories
+The DCOS CLI draws on a few online repositories for installable packages.  Those repositories are:
+
+- [Mesosphere Universe](https://github.com/mesosphere/universe/)
+- [Mesosphere Multiverse](https://github.com/mesosphere/multiverse/)
+
+Note that the packages are DCOS-specific.  At least, they assume that Mesos DNS and the Admin Router are in play.
+
+It is possible to fork the multiverse to add new packages.   You must reconfigure the CLI accordingly (see `bin/env-setup` script).
+
+## Admin Router
+The Admin Router acts as an HTTP gateway for the services and webui's in DCOS.   
+
+It contains large amounts of service-specific knowledge.  For example, it recognizes the `/services/sparkcli` path as a reference to the spark dispatcher's REST port.   The associated Marathon app also assumes the use of the admin router (see the `APPLICATION_WEB_PROXY_BASE` environment variable).
+
 ## Mesos DNS
 Mesos DNS provides *service discovery*, not a fully-fledged DNS solution.   Applications use Mesos DNS to easily locate the Mesos master and their own frameworks and tasks.
 
@@ -132,10 +153,12 @@ PING marathon.mesos (100.0.10.11) 56(84) bytes of data.
 64 bytes from mesos-master1 (100.0.10.11): icmp_seq=2 ttl=64 time=0.342 ms
 ```
 
+Various packages in the Universe assume the use of Mesos DNS.   For example, the spark Marathon app uses a hardcoded reference to the ZK endpoint, as `--zk master.mesos:2181`.
+
 ## Apache Spark
 The DCOS Universe provides a Spark package which installs the Mesos Cluster Dispatcher and an associated CLI.  
 
-The CLI provides the following functionality:
+The CLI (source code [here](https://github.com/mesosphere/dcos-spark)) provides the following functionality:
 
 - Automatically downloads the Spark tools (i.e. `spark-submit`).
 - Wraps `spark-submit` to automatically set the deploy mode to Mesos cluster mode, with the appropriate endpoint.
