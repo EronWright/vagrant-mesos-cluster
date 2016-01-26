@@ -18,6 +18,7 @@ A vagrant configuration to set up a cluster of mesos master, slaves and zookeepe
   - [Package Repositories](#package-repositories)
   - [Admin Router](#admin-router)
   - [Mesos DNS](#mesos-dns)
+  - [HAProxy](#haproxy)
   - [Apache Spark](#apache-spark)
     - [Dispatcher](#dispatcher)
     - [CLI](#cli)
