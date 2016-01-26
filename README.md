@@ -3,6 +3,36 @@ vagrant-mesos-cluster
 
 A vagrant configuration to set up a cluster of mesos master, slaves and zookeepers through ansible.
 
+- [Usage](#usage)
+  - [Prerequisites](#prerequisites)
+  - [Clone the repository](#clone-the-repository)
+  - [Launching the cluster](#launching-the-cluster)
+  - [Using SSH](#using-ssh)
+  - [Installing the CLI](#installing-the-cli)
+  - [Adding Slaves](#adding-slaves)
+- [Working with Applications](#working-with-applications)
+  - [Deploying Spark](#deploying-spark)
+    - [Spark Package](#spark-package)
+    - [Example App](#example-app)
+- [Remarks](#remarks)
+  - [Package Repositories](#package-repositories)
+  - [Admin Router](#admin-router)
+  - [Mesos DNS](#mesos-dns)
+  - [Apache Spark](#apache-spark)
+    - [Dispatcher](#dispatcher)
+    - [CLI](#cli)
+    - [Docker Image](#docker-image)
+    - [Shuffle Service](#shuffle-service)
+- [Troubleshooting](#troubleshooting)
+  - [Information Sources](#information-sources)
+    - [DCOS CLI](#dcos-cli)
+    - [Docker Logs](#docker-logs)
+    - [Sandbox Output](#sandbox-output)
+  - [Spark](#spark)
+    - [Insufficient Resources](#insufficient-resources)
+    - [Custom Docker Image](#custom-docker-image)
+    - [Source Code](#source-code)
+    
 # Usage
 
 ## Prerequisites
@@ -68,10 +98,14 @@ $ vagrant up mesos-slave2
 ## Deploying Spark
 Installing Spark on a Mesos cluster allows Spark applications to be launched into the cluster with `spark-submit` in [cluster mode](http://spark.apache.org/docs/latest/running-on-mesos.html#cluster-mode).   In technical terms, the Mesos Cluster Dispatcher is installed as a Marathon app.
 
+### Spark Package
 Use the DCOS cli to install the Spark package.
 
 ```
+$ source bin/env-setup
+...
 (dcoscli) $ dcos package install spark
+
 Note that the Apache Spark DCOS Service is beta and there may be bugs, incomplete features, incorrect documentation or other discrepancies.
 We recommend a minimum of two nodes with at least 2 CPU and 2GB of RAM available for the Spark Service and running a Spark job.
 Note: The Spark CLI may take up to 5min to download depending on your connection.
@@ -91,37 +125,39 @@ Now, open the webui, whose address may be obtained using the cli:
 http://100.0.10.11/service/spark/
 ```
 
-## Deploying Docker containers
+### Example App
+Let's deploy the SparkPI example app for demonstration purposes.   
 
-Submitting a Docker container to run on the cluster is done by making a call to
-Marathon's REST API:
+The `dcos spark run` command is used to launch a spark app into the cluster.  Usually an `hdfs:` or `http:` URL to the app jar is supplied by the user, but a `file:` URL may be used if the file is already present on the slave nodes.  With that in mind, Ansible copied the `spark-examples-1.6.0-hadoop2.6.0.jar` file to the slaves already.
 
-First create a file, `ubuntu.json`, with the details of the Docker container that you want to run:
-
+Run the SparkPI example now:
 ```
+$ spark/bin/run-example.sh
+
+Ran command: /Users/eron/.dcos/subcommands/spark/env/lib/python2.7/site-packages/dcos_spark/data/spark-1.6.0/bin/spark-submit --deploy-mode cluster --master mesos://100.0.10.11/service/sparkcli/ --driver-memory=512M --driver-cores=0.5 --executor-memory 512M --total-executor-cores=1 --class org.apache.spark.examples.SparkPi file:/tmp/mesos/spark-examples-1.6.0-hadoop2.6.0.jar 10
+Stdout:
+
+Stderr:
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+16/01/26 09:34:04 INFO RestSubmissionClient: Submitting a request to launch an application in mesos://100.0.10.11/service/sparkcli/.
+16/01/26 09:34:05 INFO RestSubmissionClient: Submission successfully created as driver-20160126173404-0001. Polling submission state...
+16/01/26 09:34:05 INFO RestSubmissionClient: Submitting a request for the status of submission driver-20160126173404-0001 in mesos://100.0.10.11/service/sparkcli/.
+16/01/26 09:34:05 INFO RestSubmissionClient: State of driver driver-20160126173404-0001 is now QUEUED.
+16/01/26 09:34:05 INFO RestSubmissionClient: Server responded with CreateSubmissionResponse:
 {
-  "container": {
-    "type": "DOCKER",
-    "docker": {
-      "image": "libmesos/ubuntu"
-    }
-  },
-  "id": "ubuntu",
-  "instances": "1",
-  "cpus": "0.5",
-  "mem": "128",
-  "uris": [],
-  "cmd": "while sleep 10; do date -u +%T; done"
+  "action" : "CreateSubmissionResponse",
+  "serverSparkVersion" : "1.6.0",
+  "submissionId" : "driver-20160126173404-0001",
+  "success" : true
 }
+
+Run job succeeded. Submission id: driver-20160126173404-0001
 ```
 
-And second, submit this container to Marathon by using curl:
-
-```
-$ curl -X POST -H "Content-Type: application/json" http://100.0.10.11:8080/v2/apps -d@ubuntu.json
-```
-
-You can monitor and scale the instance by going to the Marathon web interface linked above. 
+1. Open the Spark dispatcher's webui (at http://100.0.10.11/service/spark) and observe that the SparkPI driver was launched.   
+2. The driver program will register itself as a Mesos framework ("Spark Pi"), observable on the Mesos Frameworks page.   Tasks will spawn soon thereafter.
+3. While the SparkPi driver is running, a web interface will exist at http://100.0.10.101:4040
+4. Once it finishes, look at the sandbox of the task labeled 'Driver for org.apache.spark.examples.SparkPi' to see the output.
 
 # Remarks
 
@@ -179,4 +215,109 @@ The source code for the `mesosphere/spark` image at [github.com/mesosphere/spark
 
 ### Shuffle Service
 Notably absent from the installed components is the [Mesos Shuffle Service](http://spark.apache.org/docs/latest/running-on-mesos.html#dynamic-resource-allocation-with-mesos).  The shuffle service is a prerequisite for dynamic resource allocation in coarse-grained mode.
+
+# Troubleshooting
+
+## Information Sources
+Here are some sources of information to troubleshoot any issue.
+
+### DCOS CLI
+The CLI supports the `--json` flag for most commands, which reveals a lot more information than the usual summary info.  For example, the node information reveals how much memory/cpu is used/available for frameworks:
+
+```
+(dcoscli) $ dcos node --json
+[
+  {
+    "TASK_ERROR": 0,
+    "TASK_FAILED": 4,
+    "TASK_FINISHED": 3,
+    "TASK_KILLED": 0,
+    "TASK_LOST": 0,
+    "TASK_RUNNING": 1,
+    "TASK_STAGING": 0,
+    "TASK_STARTING": 0,
+    "active": true,
+    "attributes": {},
+    "framework_ids": [
+      "20160126-054935-185204836-5050-1-0000",
+      "20160126-154450-185204836-5050-1-0000"
+    ],
+    "hostname": "100.0.10.101",
+    "id": "20160126-172018-185204836-5050-1-S0",
+    "offered_resources": {
+      "cpus": 0,
+      "disk": 0,
+      "mem": 0
+    },
+    "pid": "slave(1)@100.0.10.101:5051",
+    "registered_time": 1453828863.50592,
+    "reregistered_time": 1453830383.81005,
+    "reserved_resources": {},
+    "resources": {
+      "cpus": 4,
+      "disk": 35164,
+      "mem": 2929,
+      "ports": "[31000-32000]"
+    },
+    "unreserved_resources": {
+      "cpus": 4,
+      "disk": 35164,
+      "mem": 2929,
+      "ports": "[31000-32000]"
+    },
+    "used_resources": {
+      "cpus": 1,
+      "disk": 0,
+      "mem": 1024,
+      "ports": "[31412-31413]"
+    }
+  }
+] 
+```
+
+Likewise, the `dcos service --json` output reveals information on frameworks and tasks.
+
+### Docker Logs
+Containerized processes typically write to stdout.  Use `sudo docker logs <container-name>` to see the output. The verbosity of Mesos is set to INFO, so use this technique to troubleshoot issues with Mesos master/agent.
+
+### Sandbox Output
+The output of Mesos tasks are accessible via the Mesos UI.   Click on the appropriate framework, then use the sandbox link to see stdout and stderr of the corresponding tasks.
+
+Remember, the Spark dispatcher is a task of Marathon.   The Spark driver program is a task of the Spark dispatcher.   The Spark executor(s) is a task of the Spark driver program.
+```
+  Marathon
+  └─Spark (i.e. Mesos cluster dispatcher)
+    └─Driver (e.g. SparkPI)
+      └─Executor (e.g. SparkPI's tasks)
+```
+
+## Spark
+Some advanced techniques for troubleshooting Spark apps. 
+
+Important: the Spark driver program output is observable in the stderr of the sandbox of the task launched by the Spark framework.
+
+### Insufficient Resources
+When a Spark driver program appears to be hung at startup, the likely cause is insufficient resources to launch any tasks.   In this situation, the driver program emits the following message:
+```
+INFO: Initial job has not accepted any resources.
+```
+
+At DEBUG level, one may observe additional messages indicating that offers were rejected (likely due to insufficient memory).
+
+### Custom Docker Image
+To increase the logging verbosity of a Spark application, it is necessary to use a custom image.   Here's how:
+
+On the Mesos slave, build the custom image:
+```
+vagrant@mesos-slave1:~$ cd /vagrant/spark
+vagrant@mesos-slave1:/vagrant/spark$ sudo docker build -t eronwright/spark:1.6.0 .
+```
+
+On your host computer, edit `spark/bin/run-example.sh` to use a custom image.   Edit the `APP_IMAGE` variable to refer to the custom image from above.  Re-launch the example app, and the sandbox logs should contain DEBUG-level information.
+
+### Source Code
+When all else fails, turn to the Spark source code.
+
+- the cluster dispatcher is mostly implemented in [MesosClusterDispatcher](https://github.com/apache/spark/blob/branch-1.6/core/src/main/scala/org/apache/spark/deploy/mesos/MesosClusterDispatcher.scala) and [MesosClusterScheduler](https://github.com/apache/spark/blob/branch-1.6/core/src/main/scala/org/apache/spark/scheduler/cluster/mesos/MesosClusterScheduler.scala).
+- the driver program's scheduler is in [CoarseMesosSchedulerBackend](https://github.com/apache/spark/blob/branch-1.6/core/src/main/scala/org/apache/spark/scheduler/cluster/mesos/CoarseMesosSchedulerBackend.scala).
 
