@@ -3,6 +3,36 @@ vagrant-mesos-cluster
 
 A vagrant configuration to set up a cluster of mesos master, slaves and zookeepers through ansible.
 
+- [Usage](#usage)
+  - [Prerequisites](#prerequisites)
+  - [Clone the repository](#clone-the-repository)
+  - [Launching the cluster](#launching-the-cluster)
+  - [Using SSH](#using-ssh)
+  - [Installing the CLI](#installing-the-cli)
+  - [Adding Slaves](#adding-slaves)
+- [Working with Applications](#working-with-applications)
+  - [Deploying Spark](#deploying-spark)
+    - [Spark Package](#spark-package)
+    - [Example App](#example-app)
+- [Remarks](#remarks)
+  - [Package Repositories](#package-repositories)
+  - [Admin Router](#admin-router)
+  - [Mesos DNS](#mesos-dns)
+  - [Apache Spark](#apache-spark)
+    - [Dispatcher](#dispatcher)
+    - [CLI](#cli)
+    - [Docker Image](#docker-image)
+    - [Shuffle Service](#shuffle-service)
+- [Troubleshooting](#troubleshooting)
+  - [Information Sources](#information-sources)
+    - [DCOS CLI](#dcos-cli)
+    - [Docker Logs](#docker-logs)
+    - [Sandbox Output](#sandbox-output)
+  - [Spark](#spark)
+    - [Insufficient Resources](#insufficient-resources)
+    - [Custom Docker Image](#custom-docker-image)
+    - [Source Code](#source-code)
+    
 # Usage
 
 ## Prerequisites
