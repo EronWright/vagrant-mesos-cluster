@@ -124,14 +124,19 @@ Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
 Run job succeeded. Submission id: driver-20160126173404-0001
 ```
 
-Open the Spark dispatcher's webui (at http://100.0.10.11/service/spark) and observe that the SparkPI driver was launched.   
+1. Open the Spark dispatcher's webui (at http://100.0.10.11/service/spark) and observe that the SparkPI driver was launched.   
+2. The driver program will register itself as a Mesos framework ("Spark Pi"), observable on the Mesos Frameworks page.   Tasks will spawn soon thereafter.
+3. While the SparkPi driver is running, a web interface will exist at http://100.0.10.101:4040
+4. Once it finishes, look at the sandbox for the task labeled 'Driver for org.apache.spark.examples.SparkPi' to see the output.
+
+
 
 ## Deploying Docker containers
 
 Submitting a Docker container to run on the cluster is done by making a call to
 Marathon's REST API:
 
-First create a file, `ubuntu.json`, with the details of the Docker container that you want to run:
+First create a file, `hello.json`, with the details of the Docker container that you want to run:
 
 ```
 {
@@ -153,7 +158,7 @@ First create a file, `ubuntu.json`, with the details of the Docker container tha
 And second, submit this container to Marathon by using curl:
 
 ```
-$ curl -X POST -H "Content-Type: application/json" http://100.0.10.11:8080/v2/apps -d@ubuntu.json
+$ curl -X POST -H "Content-Type: application/json" http://100.0.10.11:8080/v2/apps -d@hello.json
 ```
 
 You can monitor and scale the instance by going to the Marathon web interface linked above. 
@@ -262,5 +267,5 @@ On your host computer, edit `spark/bin/run-example.sh` to use a custom image.   
 When all else fails, turn to the Spark source code.
 
 - the cluster dispatcher is mostly implemented in [MesosClusterDispatcher](https://github.com/apache/spark/blob/branch-1.6/core/src/main/scala/org/apache/spark/deploy/mesos/MesosClusterDispatcher.scala) and [MesosClusterScheduler](https://github.com/apache/spark/blob/branch-1.6/core/src/main/scala/org/apache/spark/scheduler/cluster/mesos/MesosClusterScheduler.scala).
-- the driver program's scheduler is in [CoarseMesosSchedulerBackend](https://github.com/apache/spark/blob/branch-1.6/core/src/main/scala/org/apache/spark/scheduler/cluster/mesos/CoarseMesosSchedulerBackend.scala)
+- the driver program's scheduler is in [CoarseMesosSchedulerBackend](https://github.com/apache/spark/blob/branch-1.6/core/src/main/scala/org/apache/spark/scheduler/cluster/mesos/CoarseMesosSchedulerBackend.scala).
 
