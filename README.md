@@ -129,40 +129,6 @@ Run job succeeded. Submission id: driver-20160126173404-0001
 3. While the SparkPi driver is running, a web interface will exist at http://100.0.10.101:4040
 4. Once it finishes, look at the sandbox for the task labeled 'Driver for org.apache.spark.examples.SparkPi' to see the output.
 
-
-
-## Deploying Docker containers
-
-Submitting a Docker container to run on the cluster is done by making a call to
-Marathon's REST API:
-
-First create a file, `hello.json`, with the details of the Docker container that you want to run:
-
-```
-{
-  "container": {
-    "type": "DOCKER",
-    "docker": {
-      "image": "libmesos/ubuntu"
-    }
-  },
-  "id": "ubuntu",
-  "instances": "1",
-  "cpus": "0.5",
-  "mem": "128",
-  "uris": [],
-  "cmd": "while sleep 10; do date -u +%T; done"
-}
-```
-
-And second, submit this container to Marathon by using curl:
-
-```
-$ curl -X POST -H "Content-Type: application/json" http://100.0.10.11:8080/v2/apps -d@hello.json
-```
-
-You can monitor and scale the instance by going to the Marathon web interface linked above. 
-
 # Remarks
 
 ## Package Repositories
