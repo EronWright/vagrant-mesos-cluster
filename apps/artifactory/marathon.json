@@ -1,0 +1,20 @@
+{
+    "id": "artifactory",
+    "cpus": 0.5,
+    "mem": 1024.0,
+    "instances": 1,
+    "env": {
+    },
+    "container": {
+        "type": "DOCKER",
+        "docker": {
+            "image": "jfrog-docker-reg2.bintray.io/jfrog/artifactory-oss:latest",
+            "network": "BRIDGE",
+            "portMappings": [
+                { "containerPort": 8081, "hostPort": 31245 }
+            ]
+        }
+    },
+    "labels": {
+    }
+}
