@@ -1,0 +1,18 @@
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        examples(MavenPublication) {
+            groupId 'org.apache.spark'
+            artifactId 'spark-examples'
+            version '1.6.0'
+            artifact("lib/spark-examples-1.6.0-hadoop2.6.0.jar") {
+                classifier 'hadoop2.6.0'
+            }
+        }
+    }
+}
+
+artifactoryPublish {
+    publications ('examples')
+}

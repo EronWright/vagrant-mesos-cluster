@@ -9,6 +9,10 @@
 
 [mesos-slaves]
 100.0.10.101
+100.0.10.102
+100.0.10.103
+100.0.10.104
+100.0.10.105
 
 [vagrant:children]
 mesos-masters
