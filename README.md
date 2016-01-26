@@ -191,6 +191,9 @@ PING marathon.mesos (100.0.10.11) 56(84) bytes of data.
 
 Various packages in the Universe assume the use of Mesos DNS.   For example, the spark Marathon app uses a hardcoded reference to the ZK endpoint, as `--zk master.mesos:2181`.
 
+## HAProxy
+Another way to facilitate service discovery is by making services available on well-known ports.   The solution described in the [Marathon Service Discovery & Load Balancing](https://mesosphere.github.io/marathon/docs/service-discovery-load-balancing) page describes a solution involving Mesos-managed ports plus haproxy.
+
 ## Apache Spark
 The DCOS Universe provides a Spark package which installs the Mesos Cluster Dispatcher and an associated CLI.  
 
