@@ -127,7 +127,7 @@ Run job succeeded. Submission id: driver-20160126173404-0001
 1. Open the Spark dispatcher's webui (at http://100.0.10.11/service/spark) and observe that the SparkPI driver was launched.   
 2. The driver program will register itself as a Mesos framework ("Spark Pi"), observable on the Mesos Frameworks page.   Tasks will spawn soon thereafter.
 3. While the SparkPi driver is running, a web interface will exist at http://100.0.10.101:4040
-4. Once it finishes, look at the sandbox for the task labeled 'Driver for org.apache.spark.examples.SparkPi' to see the output.
+4. Once it finishes, look at the sandbox of the task labeled 'Driver for org.apache.spark.examples.SparkPi' to see the output.
 
 # Remarks
 
@@ -190,6 +190,62 @@ Notably absent from the installed components is the [Mesos Shuffle Service](http
 
 ## Information Sources
 Here are some sources of information to troubleshoot any issue.
+
+### DCOS CLI
+The CLI supports the `--json` flag for most commands, which reveals a lot more information than the usual summary info.  For example, the node information reveals how much memory/cpu is used/available for frameworks:
+
+```
+(dcoscli) $ dcos node --json
+[
+  {
+    "TASK_ERROR": 0,
+    "TASK_FAILED": 4,
+    "TASK_FINISHED": 3,
+    "TASK_KILLED": 0,
+    "TASK_LOST": 0,
+    "TASK_RUNNING": 1,
+    "TASK_STAGING": 0,
+    "TASK_STARTING": 0,
+    "active": true,
+    "attributes": {},
+    "framework_ids": [
+      "20160126-054935-185204836-5050-1-0000",
+      "20160126-154450-185204836-5050-1-0000"
+    ],
+    "hostname": "100.0.10.101",
+    "id": "20160126-172018-185204836-5050-1-S0",
+    "offered_resources": {
+      "cpus": 0,
+      "disk": 0,
+      "mem": 0
+    },
+    "pid": "slave(1)@100.0.10.101:5051",
+    "registered_time": 1453828863.50592,
+    "reregistered_time": 1453830383.81005,
+    "reserved_resources": {},
+    "resources": {
+      "cpus": 4,
+      "disk": 35164,
+      "mem": 2929,
+      "ports": "[31000-32000]"
+    },
+    "unreserved_resources": {
+      "cpus": 4,
+      "disk": 35164,
+      "mem": 2929,
+      "ports": "[31000-32000]"
+    },
+    "used_resources": {
+      "cpus": 1,
+      "disk": 0,
+      "mem": 1024,
+      "ports": "[31412-31413]"
+    }
+  }
+] 
+```
+
+Likewise, the `dcos service --json` output reveals information on frameworks and tasks.
 
 ### Docker Logs
 Containerized processes typically write to stdout.  Use `sudo docker logs <container-name>` to see the output. The verbosity of Mesos is set to INFO, so use this technique to troubleshoot issues with Mesos master/agent.
