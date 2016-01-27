@@ -49,6 +49,10 @@ Optionally, install [kafkacat](https://github.com/edenhill/kafkacat) for experim
 
 ## Clone the repository
 The repository contains a submodule, so clone it using the `--recursive` flag.
+```
+$ git clone --recursive https://github.com/EronWright/vagrant-mesos-cluster.git
+$ cd vagrant-mesos-cluster
+```
 
 ## Launching the cluster
 Launch the cluster VMs:
@@ -97,6 +101,107 @@ $ vagrant up mesos-slave2
 ```
 
 # Working with Applications
+
+## Deploying Kafka
+Installing Kafka on a Mesos cluster allows brokers to be launched into the cluster, and to serve topics.
+
+### Kafka Package
+Use the DCOS cli to install the Kafka package.
+```
+$ source bin/env-setup
+...
+(dcoscli) $ dcos package install kafka
+...
+```
+
+It takes 5 minutes or so for the Kafka scheduler to start.   Proceed once the Mesos task named `Kafka` reaches the running state.
+
+### Kafka Broker
+Create at least one broker to host a topic.
+
+Create a broker using the dcos cli.  Note that the `0` argument shall be the broker's unique identifier.
+```
+(dcoscli) $ dcos kafka broker add 0
+broker added:
+  id: 0
+  active: false
+  state: stopped
+  resources: cpus:1.00, mem:2048, heap:1024, port:auto
+  failover: delay:1m, max-delay:10m
+  stickiness: period:10m
+```
+
+Start the broker:
+```
+(dcoscli) $ dcos kafka broker start 0
+broker started:
+  id: 0
+  active: true
+  state: running
+  resources: cpus:1.00, mem:2048, heap:1024, port:auto
+  failover: delay:1m, max-delay:10m
+  stickiness: period:10m, hostname:100.0.10.101
+  task: 
+    id: broker-0-3589972d-a101-41b3-98d1-ba2fa16eb0ec
+    state: running
+    endpoint: 100.0.10.101:31000
+```
+
+Verify that the task has started (it may take a few minutes).  You should see a task named `broker-0`.
+```
+(dcoscli) $ dcos task 
+NAME           HOST          USER  STATE  ID                                                  
+broker-0       100.0.10.101  root    R    broker-0-3589972d-a101-41b3-98d1-ba2fa16eb0ec       
+kafka          100.0.10.101  root    R    kafka.f5940006-c4b5-11e5-9a57-024270adf267          
+kafka-manager  100.0.10.101  root    R    kafka-manager.e42a8fb4-c4b4-11e5-9a57-024270adf267  
+```
+
+List the installed brokers at any time:
+```
+(dcoscli) $ dcos kafka broker list
+...
+```
+
+## Topic
+Now, add a topic to the Kafka cluster:
+```
+(dcoscli) $ dcos kafka topic add topic1
+topic added:
+  name: topic1
+  partitions: 0:[0]
+```
+
+### Validation
+Let's use kafkacat to produce and consume some data.  Notice that the broker endpoint is needed from above.
+
+```
+(dcoscli) $ kafkacat -L -b 100.0.10.101:31000
+Metadata for all topics (from broker -1: 100.0.10.101:31000/bootstrap):
+ 1 brokers:
+  broker 0 at 100.0.10.101:31000
+ 1 topics:
+  topic "topic1" with 1 partitions:
+    partition 0, leader 0, replicas: 0, isrs: 0
+```
+
+_If kafkacat isn't available on your system, build and use the kafkacat image provided in `tools/kafkacat/`._
+
+### Kafka Manager (Optional)
+Yahoo open-sourced a user interface for Kafka called [Kafka Manager](https://github.com/yahoo/kafka-manager).  The UI simplifies the management of brokers and topics.
+
+Let's deploying the manager using the provided marathon app descriptor ([source code](apps/kafka-manager/marathon.json)):
+```
+(dcoscli) $ dcos marathon app add apps/kafka-manager/marathon.json
+```
+
+Once it is deployed (use the Marathon UI to monitor the progress), browse to its endpoint (also displayed in the UI).   
+
+Register the Kafka cluster by selecting 'Add Cluster' then entering the following details:
+- **Cluster Name**:            `cluster1`
+- **Cluster Zookeeper Hosts**: `master.mesos:2181`
+- **Kafka Version**:           `0.8.2.2`
+
+Also check the **Poll consumer information** checkbox. 
 
 ## Deploying Spark
 Installing Spark on a Mesos cluster allows Spark applications to be launched into the cluster with `spark-submit` in [cluster mode](http://spark.apache.org/docs/latest/running-on-mesos.html#cluster-mode).   In technical terms, the Mesos Cluster Dispatcher is installed as a Marathon app.
