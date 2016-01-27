@@ -15,6 +15,7 @@
       MARATHON_LOGGING_LEVEL: "{{marathon_logging_level}}"
       MARATHON_MASTER: "{{mesos_zk}}"
       MARATHON_TASK_LAUNCH_TIMEOUT: "{{marathon_task_launch_timeout}}"
+      MARATHON_TASK_LAUNCH_CONFIRM_TIMEOUT: "{{marathon_task_launch_confirm_timeout}}"
       MARATHON_ZK: "{{marathon_zk}}"
     privileged: True
     net: host

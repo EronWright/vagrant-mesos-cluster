@@ -3,3 +3,4 @@ marathon_version: "v0.11.0"
 marathon_docker_image: "mesosphere/marathon:{{marathon_version}}"
 marathon_name: "marathon"
 marathon_task_launch_timeout: 600000
+marathon_task_launch_confirm_timeout: 300000
