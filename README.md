@@ -11,6 +11,12 @@ A vagrant configuration to set up a cluster of mesos master, slaves and zookeepe
   - [Installing the CLI](#installing-the-cli)
   - [Adding Slaves](#adding-slaves)
 - [Working with Applications](#working-with-applications)
+  - [Deploying Kafka](#deploying-kafka)
+    - [Kafka Package](#kafka-package)
+    - [Broker](#broker)
+    - [Topic](#topic)
+    - [Validation](#validation)
+    - [Kafka Manager (UI)](#kafka-manager-optional)
   - [Deploying Spark](#deploying-spark)
     - [Spark Package](#spark-package)
     - [Example App](#example-app)
@@ -116,7 +122,7 @@ $ source bin/env-setup
 
 It takes 5 minutes or so for the Kafka scheduler to start.   Proceed once the Mesos task named `Kafka` reaches the running state.
 
-### Kafka Broker
+### Broker
 Create at least one broker to host a topic.
 
 Create a broker using the dcos cli.  Note that the `0` argument shall be the broker's unique identifier.
