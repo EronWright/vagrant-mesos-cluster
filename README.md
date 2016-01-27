@@ -45,6 +45,8 @@ Install the following software onto your Mac OS X or Linux box.   Note: Windows 
 4. Install [Ansible](http://docs.ansible.com/ansible/intro_installation.html).
 5. Install Python [virtualenv](https://virtualenv.readthedocs.org/en/latest/).
 
+Optionally, install [kafkacat](https://github.com/edenhill/kafkacat) for experimenting with Kafka.
+
 ## Clone the repository
 The repository contains a submodule, so clone it using the `--recursive` flag.
 
