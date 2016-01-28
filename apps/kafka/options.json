@@ -1,0 +1,9 @@
+{
+    "kafka": {
+        "app": {
+            "jre": "http://137.69.172.213/kafka/jre-7u79-openjdk.tgz",
+            "kafka": "http://137.69.172.213/kafka/kafka_2.10-0.8.2.1.tgz",
+            "jar": "http://137.69.172.213/kafka/kafka-mesos-0.9.2.0.jar"
+        }
+    }
+}
