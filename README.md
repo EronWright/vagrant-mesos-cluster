@@ -180,6 +180,8 @@ topic added:
 ### Validation
 Let's use kafkacat to produce and consume some data.  Notice that the broker endpoint is needed from above.
 
+_If kafkacat isn't available on your system, build and use the kafkacat image provided in `tools/kafkacat/`._
+
 ```
 (dcoscli) $ kafkacat -L -b 100.0.10.101:31000
 Metadata for all topics (from broker -1: 100.0.10.101:31000/bootstrap):
@@ -188,9 +190,19 @@ Metadata for all topics (from broker -1: 100.0.10.101:31000/bootstrap):
  1 topics:
   topic "topic1" with 1 partitions:
     partition 0, leader 0, replicas: 0, isrs: 0
+
+(dcoscli) $ kafkacat -P -b 100.0.10.101:31000 -t topic1
+Hello
+World
+(ctrl-C)(ctrl-C)
+
+(dcoscli) $ kafkacat -C -b 100.0.10.101:31000 -t topic1
+Hello
+World
+(ctrl-C)(ctrl-C)
 ```
 
-_If kafkacat isn't available on your system, build and use the kafkacat image provided in `tools/kafkacat/`._
+Hint: tmux keyboard shortcuts are `ctrl-b,shift-"` to split the window, then `ctrl-b,o` to switch panes.
 
 ### Kafka Manager (Optional)
 Yahoo open-sourced a user interface for Kafka called [Kafka Manager](https://github.com/yahoo/kafka-manager).  The UI simplifies the management of brokers and topics.
