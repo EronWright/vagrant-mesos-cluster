@@ -116,7 +116,7 @@ Use the DCOS cli to install the Kafka package.
 ```
 $ source bin/env-setup
 ...
-(dcoscli) $ dcos package install kafka
+(dcoscli) $ dcos package install --options=apps/kafka/options.json kafka
 ...
 ```
 
