@@ -22,12 +22,16 @@ A vagrant configuration to set up a cluster of mesos master, slaves and zookeepe
     - [Example App](#example-app)
 - [Remarks](#remarks)
   - [Package Repositories](#package-repositories)
+  - [DCOS CLI](#dcos-cli)
+    - [Configuration](#configuration)
+    - [Package Options](#package-options)
+    - [Subcommands](#subcommands)
   - [Admin Router](#admin-router)
   - [Mesos DNS](#mesos-dns)
   - [HAProxy](#haproxy)
   - [Apache Spark](#apache-spark)
     - [Dispatcher](#dispatcher)
-    - [CLI](#cli)
+    - [Spark CLI](#spark-cli)
     - [Docker Image](#docker-image)
     - [Shuffle Service](#shuffle-service)
 - [Troubleshooting](#troubleshooting)
@@ -297,6 +301,26 @@ Note that the packages are DCOS-specific.  At least, they assume that Mesos DNS 
 
 It is possible to fork the multiverse to add new packages.   You must reconfigure the CLI accordingly (see `bin/env-setup` script).
 
+## DCOS CLI
+Here are a few notes about the workings of the CLI.
+
+### Configuration
+The CLI is configured with the `dcos config [set|show]` subcommand.  The configuration is written to the `$DCOS_CONFIG` location, which we set to `<gitrepo>/dcos.toml`.  
+
+The configuration primarily contains:
+- the address of the Mesos master and of Marathon, and
+- the set of package repositories to draw on.
+
+### Package Options
+The `dcos package install` command accepts an `--options` argument, to override certain deployment properties.  We use this in the Kafka instructions [above](#kafka-package) to override the location of certain Kafka jars.
+
+The set of valid options for a given package are defined in its associated `config.json` file ([example](https://github.com/mesosphere/universe/blob/version-1.x/repo/packages/K/kafka/1/config.json#L16)).   The CLI reads the values supplied by the user in `options.json` ([example](https://github.com/EronWright/vagrant-mesos-cluster/blob/master/apps/kafka/options.json)), then renders the package's Marathon app descriptor template ([example](https://github.com/mesosphere/universe/blob/version-1.x/repo/packages/K/kafka/1/marathon.json#L7)).
+
+### Subcommands
+The CLI is extensible - as new packages are installed, new subcommands become available.  For example, by installing the Kafka package, `dcos kafka [broker|topic] [add|delete|list]` commands appear.
+
+This works by installing Python packages (using `pip`) to a cache located at `~/.dcos/subcommands/`.   The DCOS package declares which Python package to install with its `command.json` ([example](https://github.com/mesosphere/universe/blob/version-1.x/repo/packages/K/kafka/1/command.json)).   The CLI dynamically discovers which subcommands are installed.
+
 ## Admin Router
 The Admin Router acts as an HTTP gateway for the services and webui's in DCOS.   
 
@@ -328,12 +352,12 @@ The dispatcher is a Mesos framework responsible for launching and supervising Sp
 
 The dispatcher is itself a Marathon application, see the definition at [github.com/mesosphere/universe/...](https://github.com/mesosphere/universe/blob/version-1.x/repo/packages/S/spark/5/marathon.json).
 
-### CLI
+### Spark CLI
 The CLI (source code [here](https://github.com/mesosphere/dcos-spark)) provides the following functionality:
 
 - Automatically downloads the Spark tools (i.e. `spark-submit`).
 - Wraps `spark-submit` to automatically set the deploy mode to Mesos cluster mode, with the appropriate endpoint.
-- Enforces the use of a docker image to run the application.
+- Enforces the use of a docker image to run the Spark application.
 - Manages running applications.
 - Easily launches the dispatcher webui.
 
